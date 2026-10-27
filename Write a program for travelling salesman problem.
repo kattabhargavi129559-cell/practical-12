@@ -1,0 +1,80 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+// Function to find the minimum weight Hamiltonian Cycle
+int solveTSP(const vector<vector<int>>& graph, int start, vector<int>& bestPath) {
+    int numVertices = graph.size();
+    
+    // Store all vertices except the starting vertex
+    vector<int> vertices;
+    for (int i = 0; i < numVertices; i++) {
+        if (i != start) {
+            vertices.push_back(i);
+        }
+    }
+
+    int minPathWeight = INT_MAX;
+    
+    // Iterate through all permutations of the remaining vertices
+    do {
+        int currentPathWeight = 0;
+        int currentVertex = start;
+        
+        // Calculate current path weight
+        for (int i = 0; i < vertices.size(); i++) {
+            currentPathWeight += graph[currentVertex][vertices[i]];
+            currentVertex = vertices[i];
+        }
+        // Add weight to return back to the starting vertex
+        currentPathWeight += graph[currentVertex][start];
+
+        // Update the minimum weight and save the best path found so far
+        if (currentPathWeight < minPathWeight) {
+            minPathWeight = currentPathWeight;
+            
+            // Build the final route order
+            bestPath.clear();
+            bestPath.push_back(start);
+            for (int v : vertices) {
+                bestPath.push_back(v);
+            }
+            bestPath.push_back(start);
+        }
+
+    } while (next_permutation(vertices.begin(), vertices.end()));
+
+    return minPathWeight;
+}
+
+int main() {
+    // Adjacency matrix representation of the graph
+    // graph[i][j] represents the distance/cost from city i to city j
+    vector<vector<int>> graph = {
+        {0, 10, 15, 20},
+        {10, 0, 35, 25},
+        {15, 35, 0, 30},
+        {20, 25, 30, 0}
+    };
+    
+    int startCity = 0;
+    vector<int> optimalRoute;
+    
+    int minCost = solveTSP(graph, startCity, optimalRoute);
+    
+    // Output results
+    cout << "Minimum TSP Travel Cost: " << minCost << endl;
+    cout << "Optimal Path: ";
+    for (int i = 0; i < optimalRoute.size(); i++) {
+        cout << optimalRoute[i];
+        if (i < optimalRoute.size() - 1) {
+            cout << " -> ";
+        }
+    }
+    cout << endl;
+
+    return 0;
+}
